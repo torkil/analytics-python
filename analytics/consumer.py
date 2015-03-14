@@ -1,17 +1,18 @@
-from threading import Thread
 import logging
+
+from gevent import Greenlet
 
 from analytics.version import VERSION
 from analytics.request import post
 
 
-class Consumer(Thread):
+class Consumer(Greenlet):
     """Consumes the messages from the client's queue."""
     log = logging.getLogger('segment')
 
     def __init__(self, queue, write_key, upload_size=100, on_error=None):
-        """Create a consumer thread."""
-        Thread.__init__(self)
+        """Create a consumer greenlet."""
+        Greenlet.__init__(self)
         self.daemon = True # set as a daemon so the program can exit
         self.upload_size = upload_size
         self.write_key = write_key
@@ -19,7 +20,7 @@ class Consumer(Thread):
         self.queue = queue
         self.retries = 3
 
-    def run(self):
+    def _run(self):
         """Runs the consumer."""
         self.log.debug('consumer is running...')
 

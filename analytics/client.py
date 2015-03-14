@@ -4,16 +4,13 @@ import logging
 import numbers
 
 from dateutil.tz import tzutc
+from gevent.queue import JoinableQueue
 from six import string_types
 
 from analytics.utils import guess_timezone, clean
 from analytics.consumer import Consumer
 from analytics.version import VERSION
 
-try:
-    import queue
-except:
-    import Queue as queue
 
 
 ID_TYPES = (numbers.Number, string_types)
@@ -27,7 +24,7 @@ class Client(object):
                  send=True, on_error=None):
         require('write_key', write_key, string_types)
 
-        self.queue = queue.Queue(max_queue_size)
+        self.queue = JoinableQueue(max_queue_size)
         self.consumer = Consumer(self.queue, write_key, on_error=on_error)
         self.write_key = write_key
         self.on_error = on_error

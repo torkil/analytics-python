@@ -1,9 +1,6 @@
 import unittest
 
-try:
-    from queue import Queue
-except:
-    from Queue import Queue
+from gevent.queue import JoinableQueue
 
 from analytics.consumer import Consumer
 
@@ -11,14 +8,14 @@ from analytics.consumer import Consumer
 class TestConsumer(unittest.TestCase):
 
     def test_next(self):
-        q = Queue()
+        q = JoinableQueue()
         consumer = Consumer(q, '')
         q.put(1)
         next = consumer.next()
         self.assertEqual(next, [1])
 
     def test_next_limit(self):
-        q = Queue()
+        q = JoinableQueue()
         upload_size = 50
         consumer = Consumer(q, '', upload_size)
         for i in range(10000):
@@ -27,7 +24,7 @@ class TestConsumer(unittest.TestCase):
         self.assertEqual(next, list(range(upload_size)))
 
     def test_upload(self):
-        q = Queue()
+        q = JoinableQueue()
         consumer  = Consumer(q, 'testsecret')
         track = {
             'type': 'track',
